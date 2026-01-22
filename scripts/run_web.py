@@ -6,18 +6,15 @@ from pathlib import Path
 import os
 
 if __name__ == "__main__":
-    # Get the path to the main Streamlit app
+    
     app_path = Path(__file__).parent.parent / "src" / "intelligent_ocr" / "web" / "streamlit_app" / "main.py"
     
-    # Change to project root directory
     project_root = Path(__file__).parent.parent
     os.chdir(project_root)
 
-    # Ensure `src/` is on import path for Streamlit execution
     src_path = project_root / "src"
     os.environ["PYTHONPATH"] = str(src_path)
     
-    # Run Streamlit
     subprocess.run([
         sys.executable,
         "-m",

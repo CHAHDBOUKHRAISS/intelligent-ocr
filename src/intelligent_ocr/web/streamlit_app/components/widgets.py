@@ -59,7 +59,6 @@ def display_extraction_results(results: dict):
             
             fields = extraction["fields"]
             
-            # Create columns for better layout
             cols = st.columns(2)
             
             for idx, (field_name, field_data) in enumerate(fields.items()):
@@ -69,17 +68,14 @@ def display_extraction_results(results: dict):
                     value = field_data.get("value", "")
                     confidence = field_data.get("confidence", 0.0)
                     
-                    # Format field name
                     display_name = field_name.replace("_", " ").title()
                     
-                    # Display field
                     st.markdown(f"**{display_name}**")
                     if isinstance(value, list):
                         st.write(", ".join(str(v) for v in value))
                     else:
                         st.write(str(value))
                     
-                    # Confidence badge
                     confidence_color = "🟢" if confidence > 0.7 else "🟡" if confidence > 0.5 else "🔴"
                     st.caption(f"{confidence_color} Confidence: {confidence:.1%}")
                     st.divider()

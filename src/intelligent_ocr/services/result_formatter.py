@@ -106,7 +106,6 @@ class ResultFormatter:
         """Format extraction result to JSON structure."""
         formatted_fields = {}
         
-        # Format each extracted field
         for field_name, field in (extraction_result.fields or {}).items():
             formatted_fields[field_name] = {
                 "value": field.value,
@@ -142,13 +141,11 @@ class ResultFormatter:
         output = io.StringIO()
         writer = csv.writer(output)
         
-        # Write header
         headers = ["Field Name", "Value", "Confidence", "Source Region"]
         if include_ocr:
             headers.extend(["OCR Text", "OCR Confidence"])
         writer.writerow(headers)
         
-        # Write extraction fields
         if extraction_result and extraction_result.fields:
             for field_name, field in extraction_result.fields.items():
                 row = [
@@ -159,7 +156,6 @@ class ResultFormatter:
                 ]
                 
                 if include_ocr and ocr_result:
-                    # Find matching OCR block by region_id
                     ocr_text, ocr_conf = self._find_ocr_for_region(
                         field.source_region,
                         ocr_result
@@ -168,7 +164,6 @@ class ResultFormatter:
                 
                 writer.writerow(row)
         else:
-            # Write empty row if no fields
             row = ["", "", "0.0000", ""]
             if include_ocr:
                 row.extend(["", "0.0000"])
@@ -275,7 +270,6 @@ class ResultFormatter:
         Returns:
             Dictionary with formatted data and export paths
         """
-        # Format to JSON structure
         json_data = self.format_to_json(
             document_id=document_id,
             filename=filename,
@@ -292,11 +286,9 @@ class ResultFormatter:
             "csv_path": None
         }
         
-        # Export JSON file if requested
         if export_json:
             result["json_path"] = str(self.export_json_file(document_id, json_data))
         
-        # Format and export CSV if requested
         if export_csv:
             csv_data = self.format_to_csv(
                 extraction_result=extraction_result,
@@ -324,7 +316,6 @@ class ResultFormatter:
             "timestamp": formatted_data.get("timestamp", ""),
         }
         
-        # OCR summary
         if formatted_data.get("ocr"):
             ocr = formatted_data["ocr"]
             summary["ocr"] = {
@@ -334,7 +325,6 @@ class ResultFormatter:
                 "average_confidence": ocr.get("average_confidence", 0.0)
             }
         
-        # Layout summary
         if formatted_data.get("layout"):
             layout = formatted_data["layout"]
             summary["layout"] = {
@@ -345,7 +335,6 @@ class ResultFormatter:
                 "region_count": layout.get("region_count", 0)
             }
         
-        # Extraction summary
         if formatted_data.get("extraction"):
             extraction = formatted_data["extraction"]
             summary["extraction"] = {

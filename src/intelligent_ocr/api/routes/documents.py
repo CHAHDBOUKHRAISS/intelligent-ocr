@@ -34,7 +34,7 @@ async def upload_document(
     
     Supports images (jpg, png, tiff, etc.) and PDF files.
     """
-    # Validate file
+
     try:
         file_content = await file.read()
         file_size = len(file_content)
@@ -43,10 +43,10 @@ async def upload_document(
     except FileValidationError as e:
         raise HTTPException(status_code=400, detail=str(e))
     
-    # Generate document ID
+    
     document_id = generate_document_id()
     
-    # Save file
+    
     file_obj = io.BytesIO(file_content)
     try:
         file_path = storage_service.save_uploaded_file(
@@ -57,7 +57,7 @@ async def upload_document(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to save file: {str(e)}")
     
-    # Create metadata
+    
     metadata = document_service.create_metadata(
         document_id=document_id,
         filename=file.filename,
@@ -82,24 +82,19 @@ async def process_document(
     
     Returns JSON results by default.
     """
-    # Find the uploaded file
-    # In a real implementation, you'd track this in a database
-    # For now, we'll search for files in the upload directory
+    
     upload_dir = storage_service.upload_dir / document_id
     if not upload_dir.exists():
         raise HTTPException(status_code=404, detail="Document not found")
     
-    # Find the first file in the document directory
     files = list(upload_dir.glob("*"))
     if not files:
         raise HTTPException(status_code=404, detail="No file found for document")
     
     file_path = files[0]
     
-    # Detect document type from filename
     document_type = document_service.detect_document_type(file_path.name)
     
-    # Process document
     try:
         results = document_service.process_document(
             file_path=file_path,
@@ -107,15 +102,12 @@ async def process_document(
             language=language
         )
         
-        # Add document ID to results
         results["document_id"] = document_id
         results["filename"] = file_path.name
         
-        # Export JSON
         json_path = export_service.export_json(document_id, results)
         results["json_export_path"] = str(json_path)
         
-        # Export CSV if extraction results exist
         if "extraction" in results and results["extraction"]:
             from intelligent_ocr.domain.schemas.extraction import ExtractionResult
             extraction = ExtractionResult(**results["extraction"])
@@ -145,7 +137,7 @@ async def upload_and_process(
     
     Returns extracted data as JSON or CSV.
     """
-    # Validate and save file
+
     try:
         file_content = await file.read()
         file_size = len(file_content)
@@ -165,11 +157,11 @@ async def upload_and_process(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to save file: {str(e)}")
     
-    # Detect document type if AUTO
+
     if document_type == DocumentType.AUTO:
         document_type = document_service.detect_document_type(file.filename)
     
-    # Process document
+    
     try:
         results = document_service.process_document(
             file_path=file_path,
@@ -180,9 +172,9 @@ async def upload_and_process(
         results["document_id"] = document_id
         results["filename"] = file.filename
         
-        # Handle output format
+        
         if output_format == OutputFormat.CSV:
-            # Export CSV
+        
             if "extraction" in results and results["extraction"]:
                 from intelligent_ocr.domain.schemas.extraction import ExtractionResult
                 extraction = ExtractionResult(**results["extraction"])
@@ -201,7 +193,7 @@ async def upload_and_process(
                     detail="No extraction results available for CSV export"
                 )
         else:
-            # Return JSON
+            
             json_path = export_service.export_json(document_id, results)
             results["json_export_path"] = str(json_path)
             
@@ -224,8 +216,7 @@ async def get_results(
     
     Returns JSON or CSV based on output_format parameter.
     """
-    # In a real implementation, you'd load results from database or cache
-    # For now, search for JSON file
+
     json_files = list(export_service.json_dir.glob(f"{document_id}_*.json"))
     
     if not json_files:

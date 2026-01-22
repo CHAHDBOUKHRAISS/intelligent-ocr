@@ -21,11 +21,9 @@ class BaseSemanticExtractor:
         """
         self.language = language
         try:
-            # Try to load spaCy model
             model_name = "en_core_web_sm" if language == "en" else f"{language}_core_news_sm"
             self.nlp = spacy.load(model_name)
         except OSError:
-            # Fallback to blank model if spaCy model not found
             self.nlp = spacy.blank(language)
     
     def extract_names(self, text: str) -> List[Tuple[str, float]]:
@@ -43,7 +41,6 @@ class BaseSemanticExtractor:
         
         for ent in doc.ents:
             if ent.label_ == "PERSON":
-                # Filter out very short names (likely false positives)
                 if len(ent.text.strip()) > 2:
                     names.append((ent.text.strip(), 0.85))
         
@@ -61,13 +58,11 @@ class BaseSemanticExtractor:
         """
         dates = []
         
-        # Use spaCy NER for dates
         doc = self.nlp(text)
         for ent in doc.ents:
             if ent.label_ == "DATE":
                 dates.append((ent.text.strip(), 0.80))
         
-        # Regex patterns for common date formats
         date_patterns = [
             # MM/DD/YYYY or DD/MM/YYYY
             (r'\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b', 0.75),
@@ -83,7 +78,6 @@ class BaseSemanticExtractor:
             matches = re.finditer(pattern, text, re.IGNORECASE)
             for match in matches:
                 date_str = match.group().strip()
-                # Avoid duplicates
                 if not any(d[0] == date_str for d in dates):
                     dates.append((date_str, confidence))
         
@@ -100,13 +94,12 @@ class BaseSemanticExtractor:
             List of tuples (email, confidence)
         """
         emails = []
-        # Email regex pattern
         email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
         
         matches = re.finditer(email_pattern, text)
         for match in matches:
             email = match.group().strip()
-            emails.append((email, 0.95))  # High confidence for regex matches
+            emails.append((email, 0.95))  
         
         return emails
     
@@ -122,16 +115,13 @@ class BaseSemanticExtractor:
         """
         amounts = []
         
-        # Use spaCy NER for money
         doc = self.nlp(text)
         for ent in doc.ents:
             if ent.label_ == "MONEY":
                 amounts.append((ent.text.strip(), 0.85))
         
-        # Regex patterns for monetary amounts
         currency_symbols = r'[$€£¥₹]|USD|EUR|GBP|JPY|INR'
         
-        # Pattern 1: Currency symbol followed by number
         pattern1 = rf'\b{currency_symbols}\s*\d+(?:,\d{{3}})*(?:\.\d{{2}})?\b'
         matches = re.finditer(pattern1, text, re.IGNORECASE)
         for match in matches:
@@ -139,7 +129,6 @@ class BaseSemanticExtractor:
             if not any(a[0] == amount for a in amounts):
                 amounts.append((amount, 0.90))
         
-        # Pattern 2: Number followed by currency code
         pattern2 = rf'\b\d+(?:,\d{{3}})*(?:\.\d{{2}})?\s*(?:{currency_symbols})\b'
         matches = re.finditer(pattern2, text, re.IGNORECASE)
         for match in matches:
@@ -147,7 +136,6 @@ class BaseSemanticExtractor:
             if not any(a[0] == amount for a in amounts):
                 amounts.append((amount, 0.90))
         
-        # Pattern 3: Number with "dollars", "euros", etc.
         currency_words = r'dollars?|euros?|pounds?|rupees?|yen'
         pattern3 = rf'\b\d+(?:,\d{{3}})*(?:\.\d{{2}})?\s*(?:{currency_words})\b'
         matches = re.finditer(pattern3, text, re.IGNORECASE)
@@ -192,14 +180,11 @@ class BaseSemanticExtractor:
         """
         fields = {}
         
-        # Extract from full text
         full_text = ocr_result.full_text
         if full_text:
             extracted = self.extract_all(full_text)
             
-            # Add names
             if extracted["names"]:
-                # Take the first name or combine multiple
                 names = [name for name, _ in extracted["names"]]
                 fields["names"] = ExtractedField(
                     field_name="names",
@@ -208,7 +193,6 @@ class BaseSemanticExtractor:
                     source_region=region_id
                 )
             
-            # Add dates
             if extracted["dates"]:
                 dates = [date for date, _ in extracted["dates"]]
                 fields["dates"] = ExtractedField(
@@ -218,7 +202,6 @@ class BaseSemanticExtractor:
                     source_region=region_id
                 )
             
-            # Add emails
             if extracted["emails"]:
                 emails = [email for email, _ in extracted["emails"]]
                 fields["emails"] = ExtractedField(
@@ -228,7 +211,6 @@ class BaseSemanticExtractor:
                     source_region=region_id
                 )
             
-            # Add monetary amounts
             if extracted["monetary_amounts"]:
                 amounts = [amount for amount, _ in extracted["monetary_amounts"]]
                 fields["monetary_amounts"] = ExtractedField(
@@ -238,17 +220,14 @@ class BaseSemanticExtractor:
                     source_region=region_id
                 )
         
-        # Also extract from individual blocks for better granularity
         for block in ocr_result.blocks:
             if block.text and block.text.strip():
                 block_extracted = self.extract_all(block.text)
                 
-                # Merge results, preferring higher confidence
                 for entity_type, entities in block_extracted.items():
                     if entities:
                         field_name = entity_type
                         if field_name not in fields:
-                            # Create new field
                             values = [val for val, _ in entities]
                             fields[field_name] = ExtractedField(
                                 field_name=field_name,
@@ -257,7 +236,6 @@ class BaseSemanticExtractor:
                                 source_region=block.region_id or region_id
                             )
                         else:
-                            # Merge with existing field if higher confidence
                             existing_conf = fields[field_name].confidence
                             new_conf = max([conf for _, conf in entities])
                             if new_conf > existing_conf:

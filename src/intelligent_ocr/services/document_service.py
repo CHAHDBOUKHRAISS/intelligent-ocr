@@ -42,7 +42,7 @@ class DocumentService:
                 f"Unsupported file type. Supported: images (jpg, png, etc.) and PDF"
             )
         
-        max_size = 50 * 1024 * 1024  # 50 MB
+        max_size = 50 * 1024 * 1024  
         if file_size > max_size:
             raise FileValidationError(f"File size exceeds maximum of {max_size / 1024 / 1024} MB")
     
@@ -60,7 +60,6 @@ class DocumentService:
         if not auto_detect:
             return DocumentType.FORM
         
-        # Simple heuristic: check filename for keywords
         filename_lower = filename.lower()
         if "cv" in filename_lower or "resume" in filename_lower:
             return DocumentType.CV

@@ -58,30 +58,25 @@ def preprocess_image(
     steps_applied = []
     skew_angle = 0.0
     
-    # Step 1: Convert to grayscale
     if len(image.shape) == 3:
         processed = convert_to_grayscale(image)
         steps_applied.append("grayscale")
     else:
         processed = image.copy()
     
-    # Step 2: Enhance contrast
     if enhance_contrast:
         processed = enhance_contrast_func(processed)
         steps_applied.append("contrast_enhancement")
     
-    # Step 3: Deskew
     if deskew:
         processed, skew_angle = deskew_image(processed)
         if abs(skew_angle) > 0.1:
             steps_applied.append(f"deskew_{skew_angle:.2f}deg")
     
-    # Step 4: Denoise
     if denoise:
         processed = clean_image(processed, method=denoise_method)
         steps_applied.append(f"denoise_{denoise_method}")
     
-    # Step 5: Binarize
     if binarize:
         processed = binarize_image(processed, method=binarize_method)
         steps_applied.append(f"binarize_{binarize_method}")
@@ -117,13 +112,13 @@ def preprocess_from_file(
     Returns:
         Dictionary containing preprocessing results
     """
-    # Load image
+
     image = cv2.imread(str(file_path))
     
     if image is None:
         raise ValueError(f"Could not load image from {file_path}")
     
-    # Preprocess
+    
     return preprocess_image(
         image,
         deskew=deskew,

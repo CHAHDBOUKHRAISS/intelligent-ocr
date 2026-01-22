@@ -8,7 +8,7 @@ class DocumentType(str, Enum):
     FORM = "form"
     CV = "cv"
     INVOICE = "invoice"
-    AUTO = "auto"  # Auto-detect document type
+    AUTO = "auto"  
 
 
 class OutputFormat(str, Enum):

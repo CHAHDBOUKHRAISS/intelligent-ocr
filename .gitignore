@@ -1,0 +1,54 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Project specific
+data/raw/*
+data/processed/*
+outputs/json/*
+outputs/csv/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!outputs/json/.gitkeep
+!outputs/csv/.gitkeep
+
+# Models (if large)
+models/detection/*
+models/recognition/*
+models/semantic/*
+!models/detection/.gitkeep
+!models/recognition/.gitkeep
+!models/semantic/.gitkeep
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Distribution
+dist/
+build/
+*.egg-info/

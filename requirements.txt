@@ -1,0 +1,25 @@
+# FastAPI and web server
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+
+# Pydantic for data validation
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# OCR libraries (basic setup)
+pytesseract==0.3.10
+Pillow==10.1.0
+pdf2image==1.16.3
+opencv-python==4.8.1.78
+numpy==1.26.4
+
+# NLP and semantic extraction
+spacy==3.7.2
+
+# Web interface
+streamlit==1.28.0
+requests==2.31.0
+
+# Utilities
+python-dotenv==1.0.0

@@ -37,15 +37,13 @@ class StorageService:
         if document_id is None:
             document_id = generate_document_id()
         
-        # Create document-specific directory
         doc_dir = self.upload_dir / document_id
         doc_dir.mkdir(parents=True, exist_ok=True)
         
-        # Save file
         file_path = doc_dir / filename
         
         try:
-            file.seek(0)  # Reset file pointer
+            file.seek(0)  
             with open(file_path, "wb") as f:
                 shutil.copyfileobj(file, f)
             

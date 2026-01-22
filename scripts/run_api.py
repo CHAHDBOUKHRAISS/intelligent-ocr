@@ -6,7 +6,6 @@ import uvicorn
 from intelligent_ocr.config.settings import settings
 
 if __name__ == "__main__":
-    # Ensure `src/` is on sys.path so `import intelligent_ocr...` works on Windows
     project_root = Path(__file__).resolve().parent.parent
     src_path = project_root / "src"
     if str(src_path) not in sys.path:
@@ -16,5 +15,5 @@ if __name__ == "__main__":
         "intelligent_ocr.api.server:app",
         host=settings.api_host,
         port=settings.api_port,
-        reload=False  # Disable reload (it can watch `venv/` on Windows and restart constantly)
+        reload=False  
     )

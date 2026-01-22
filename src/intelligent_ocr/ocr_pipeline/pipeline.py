@@ -46,7 +46,6 @@ class OCRPipeline:
             ocr_result = self._recognize_text(preprocessed_image, layout_result, language)
             
             # Step 4: Semantic Extraction
-            # Map OCR language code to spaCy language code (e.g., "eng" -> "en")
             spacy_lang = self._map_language_code(language)
             extraction_result = self._extract_semantics(
                 ocr_result,
@@ -110,7 +109,7 @@ class OCRPipeline:
             height, width = 0, 0
         
         return LayoutDetectionResult(
-            regions=[],  # Layout detection to be implemented
+            regions=[],  
             page_width=width,
             page_height=height
         )
@@ -135,7 +134,6 @@ class OCRPipeline:
         Returns:
             OCRResult with extracted text blocks
         """
-        # If regions are detected, extract from each region
         if layout_result.regions:
             return self.ocr_engine.extract_from_regions(
                 image=image,
@@ -143,7 +141,6 @@ class OCRPipeline:
                 language=language
             )
         else:
-            # Extract from entire image
             return self.ocr_engine.extract_full_image(
                 image=image,
                 language=language
@@ -194,7 +191,6 @@ class OCRPipeline:
             BaseSemanticExtractor
         )
         
-        # Select appropriate extractor based on document type
         if document_type == DocumentType.FORM:
             extractor = FormsExtractor(language=language)
         elif document_type == DocumentType.CV:
@@ -202,7 +198,6 @@ class OCRPipeline:
         elif document_type == DocumentType.INVOICE:
             extractor = InvoiceExtractor(language=language)
         else:
-            # Default to base extractor
             extractor = BaseSemanticExtractor(language=language)
             return extractor.extract_from_ocr_result(ocr_result)
         

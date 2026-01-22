@@ -52,7 +52,6 @@ def remove_noise_morphological(image: np.ndarray, kernel_size: int = 3) -> np.nd
     """
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size))
     
-    # Opening: erosion followed by dilation (removes small noise)
     denoised = cv2.morphologyEx(image, cv2.MORPH_OPEN, kernel)
     
     return denoised
@@ -70,7 +69,6 @@ def remove_salt_pepper_noise(image: np.ndarray, method: str = "median") -> np.nd
         Denoised image
     """
     if method == "median":
-        # Median filter is effective for salt-and-pepper noise
         return cv2.medianBlur(image, 5)
     elif method == "bilateral":
         return remove_noise_bilateral(image)
@@ -96,7 +94,6 @@ def clean_image(image: np.ndarray, method: str = "bilateral") -> np.ndarray:
     elif method == "median":
         return remove_salt_pepper_noise(image, method="median")
     elif method == "morphological":
-        # Morphological operations work best on binary images
         return remove_noise_morphological(image)
     else:
         return image

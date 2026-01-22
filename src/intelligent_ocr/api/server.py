@@ -15,16 +15,14 @@ def create_app() -> FastAPI:
         description="Intelligent OCR API for processing semi-structured documents"
     )
     
-    # Configure CORS
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],  # In production, specify allowed origins
+        allow_origins=["*"],  
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
     )
     
-    # Include routers
     app.include_router(health.router)
     app.include_router(documents.router)
     app.include_router(metadata.router)
@@ -32,7 +30,6 @@ def create_app() -> FastAPI:
     return app
 
 
-# Create app instance
 app = create_app()
 
 

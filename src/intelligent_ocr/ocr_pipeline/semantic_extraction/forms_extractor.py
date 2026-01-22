@@ -38,10 +38,6 @@ class FormsExtractor:
         Returns:
             ExtractionResult with extracted fields
         """
-        # Use base extractor for general semantic extraction
         result = self.base_extractor.extract_from_ocr_result(ocr_result)
-        
-        # Form-specific enhancements can be added here
-        # For example, extracting form field labels and values
         
         return result

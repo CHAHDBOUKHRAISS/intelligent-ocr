@@ -36,10 +36,6 @@ class InvoiceExtractor:
         Returns:
             ExtractionResult with extracted fields
         """
-        # Use base extractor for general semantic extraction
         result = self.base_extractor.extract_from_ocr_result(ocr_result)
-        
-        # Invoice-specific enhancements can be added here
-        # For example, extracting invoice number, tax amounts, line items
         
         return result

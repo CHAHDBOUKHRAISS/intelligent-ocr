@@ -73,20 +73,15 @@ def binarize_sauvola(image: np.ndarray, window_size: int = 15, k: float = 0.2) -
     if window_size % 2 == 0:
         window_size += 1
     
-    # Convert to float for calculations
     img_float = image.astype(np.float32)
     
-    # Calculate local mean using box filter
     mean = cv2.boxFilter(img_float, cv2.CV_32F, (window_size, window_size))
     
-    # Calculate local standard deviation
     mean_sq = cv2.boxFilter(img_float ** 2, cv2.CV_32F, (window_size, window_size))
     std = np.sqrt(mean_sq - mean ** 2)
     
-    # Calculate threshold
     threshold = mean * (1 + k * ((std / 128) - 1))
     
-    # Apply threshold
     binary = (img_float > threshold).astype(np.uint8) * 255
     
     return binary
@@ -138,5 +133,4 @@ def binarize_image(
         threshold_value = kwargs.get("threshold_value", 127)
         return binarize_simple(image, threshold_value=threshold_value)
     else:
-        # Default to Otsu
         return binarize_otsu(image)

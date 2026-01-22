@@ -32,28 +32,22 @@ def detect_skew_angle(image: np.ndarray) -> float:
     Returns:
         Skew angle in degrees
     """
-    # Apply edge detection
     edges = cv2.Canny(image, 50, 150, apertureSize=3)
     
-    # Detect lines using Hough Transform
     lines = cv2.HoughLines(edges, 1, np.pi / 180, 200)
     
     if lines is None or len(lines) == 0:
         return 0.0
     
-    # Calculate angles from detected lines
     angles = []
     for line in lines:
         rho, theta = line[0]
         angle = np.degrees(theta) - 90
-        # Normalize angle to [-45, 45] range
         if angle < -45:
             angle += 90
         elif angle > 45:
             angle -= 90
         angles.append(angle)
-    
-    # Return median angle (more robust than mean)
     return np.median(angles) if angles else 0.0
 
 
@@ -71,28 +65,22 @@ def deskew_image(image: np.ndarray, angle: Optional[float] = None) -> Tuple[np.n
     if angle is None:
         angle = detect_skew_angle(image)
     
-    # Skip rotation if angle is too small
     if abs(angle) < 0.1:
         return image, angle
     
-    # Get image dimensions
     h, w = image.shape[:2]
     center = (w // 2, h // 2)
     
-    # Calculate rotation matrix
     rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
     
-    # Calculate new image dimensions to avoid cropping
     cos = np.abs(rotation_matrix[0, 0])
     sin = np.abs(rotation_matrix[0, 1])
     new_w = int((h * sin) + (w * cos))
     new_h = int((h * cos) + (w * sin))
     
-    # Adjust rotation matrix for new dimensions
     rotation_matrix[0, 2] += (new_w / 2) - center[0]
     rotation_matrix[1, 2] += (new_h / 2) - center[1]
     
-    # Apply rotation
     deskewed = cv2.warpAffine(
         image,
         rotation_matrix,
@@ -130,10 +118,8 @@ def normalize_image(image: np.ndarray, enhance: bool = True) -> np.ndarray:
     Returns:
         Normalized grayscale image
     """
-    # Convert to grayscale
     gray = convert_to_grayscale(image)
     
-    # Enhance contrast if requested
     if enhance:
         gray = enhance_contrast(gray)
     

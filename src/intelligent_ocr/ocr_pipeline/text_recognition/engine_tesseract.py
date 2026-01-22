@@ -42,11 +42,9 @@ class TesseractEngine:
             Dictionary with text and confidence information
         """
         try:
-            # Default config for single uniform block of text
             if config is None:
                 config = "--psm 6"
             
-            # Extract text with confidence scores
             data = pytesseract.image_to_data(
                 image,
                 lang=language,
@@ -54,10 +52,8 @@ class TesseractEngine:
                 output_type=pytesseract.Output.DICT
             )
             
-            # Extract text string
             text = pytesseract.image_to_string(image, lang=language, config=config).strip()
             
-            # Calculate average confidence (excluding empty detections)
             confidences = [int(conf) for conf in data["conf"] if int(conf) > 0]
             avg_confidence = sum(confidences) / len(confidences) / 100.0 if confidences else 0.0
             
@@ -90,13 +86,11 @@ class TesseractEngine:
         Returns:
             TextBlock with extracted text and metadata
         """
-        # Crop region from image
         x = bounding_box.x
         y = bounding_box.y
         w = bounding_box.width
         h = bounding_box.height
         
-        # Ensure coordinates are within image bounds
         img_height, img_width = image.shape[:2]
         x = max(0, min(x, img_width))
         y = max(0, min(y, img_height))
@@ -111,10 +105,8 @@ class TesseractEngine:
                 region_id=region_id
             )
         
-        # Crop the region
         region_image = image[y:y+h, x:x+w]
         
-        # Extract text from region
         try:
             result = self.extract_text(region_image, language=language, config=config)
             
@@ -125,7 +117,6 @@ class TesseractEngine:
                 region_id=region_id
             )
         except Exception as e:
-            # Return empty block on error
             return TextBlock(
                 text="",
                 confidence=0.0,
@@ -155,10 +146,8 @@ class TesseractEngine:
         text_blocks = []
         
         for region in regions:
-            # Auto-select config based on region type
             region_config = self._get_config_for_region_type(region.region_type, config)
             
-            # Extract text from region
             text_block = self.extract_from_region(
                 image=image,
                 bounding_box=region.bounding_box,
@@ -169,10 +158,8 @@ class TesseractEngine:
             
             text_blocks.append(text_block)
         
-        # Combine all text
         full_text = "\n".join([block.text for block in text_blocks if block.text.strip()])
         
-        # Calculate average confidence
         confidences = [block.confidence for block in text_blocks if block.confidence > 0]
         avg_confidence = sum(confidences) / len(confidences) if confidences else 0.0
         
@@ -200,11 +187,10 @@ class TesseractEngine:
             OCRResult with extracted text
         """
         if config is None:
-            config = "--psm 6"  # Assume uniform block of text
+            config = "--psm 6" 
         
         result = self.extract_text(image, language=language, config=config)
         
-        # Create a single text block for the entire image
         img_height, img_width = image.shape[:2]
         bounding_box = BoundingBox(
             x=0,
@@ -262,7 +248,7 @@ class TesseractEngine:
         elif "sparse" in region_type_lower:
             return "--psm 11"  # Sparse text
         else:
-            return "--psm 6"  # Default: uniform block
+            return "--psm 6" 
 
 
 def create_tesseract_engine(tesseract_cmd: Optional[str] = None) -> TesseractEngine:

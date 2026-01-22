@@ -36,10 +36,6 @@ class CVExtractor:
         Returns:
             ExtractionResult with extracted fields
         """
-        # Use base extractor for general semantic extraction
         result = self.base_extractor.extract_from_ocr_result(ocr_result)
-        
-        # CV-specific enhancements can be added here
-        # For example, extracting skills, work experience, education
         
         return result

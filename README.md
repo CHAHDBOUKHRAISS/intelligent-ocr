@@ -58,24 +58,24 @@ The system follows a modular, layered architecture:
 ```
 ┌─────────────────────────────────────────────────┐
 │           Streamlit Web Interface               │
-│         (User-facing frontend)                   │
+│         (User-facing frontend)                  │
 └──────────────────┬──────────────────────────────┘
                    │
 ┌──────────────────▼──────────────────────────────┐
-│           FastAPI REST Backend                   │
-│    (API endpoints, request handling)             │
+│           FastAPI REST Backend                  │
+│    (API endpoints, request handling)            │
 └──────────────────┬──────────────────────────────┘
                    │
 ┌──────────────────▼──────────────────────────────┐
-│            OCR Pipeline                          │
-│  ┌──────────────┬──────────────┬──────────────┐│
-│  │Preprocessing │  Layout      │  Text        ││
-│  │              │  Detection    │  Recognition ││
-│  └──────────────┴──────────────┴──────────────┘│
+│            OCR Pipeline                         │
+│  ┌──────────────┬──────────────┬──────────────┐ │
+│  │Preprocessing │  Layout      │  Text        │ │
+│  │              │  Detection   │ Recognition  │ │
+│  └──────────────┴──────────────┴──────────────┘ │
 │  ┌─────────────────────────────────────────────┐│
 │  │      Semantic Extraction                    ││
 │  └─────────────────────────────────────────────┘│
-└──────────────────────────────────────────────────┘
+└─────────────────────────────────────────────────┘
 ```
 
 ### Components
@@ -263,8 +263,8 @@ Le système suit une architecture modulaire en couches :
 
 ```
 ┌─────────────────────────────────────────────────┐
-│        Interface Web Streamlit                   │
-│         (Frontend utilisateur)                   │
+│        Interface Web Streamlit                  │
+│         (Frontend utilisateur)                  │
 └──────────────────┬──────────────────────────────┘
                    │
 ┌──────────────────▼──────────────────────────────┐
@@ -274,15 +274,15 @@ Le système suit une architecture modulaire en couches :
                    │
 ┌──────────────────▼──────────────────────────────┐
 │            Pipeline OCR                         │
-│  ┌──────────────┬──────────────┬──────────────┐│
-│  │Prétraitement │  Détection   │  Reconnaissance││
+│  ┌──────────────┬──────────────┬───────────────┐│
+│  │Prétraitement │  Détection   │ Reconnaissance││
 │  │              │  de Mise en  │  de Texte     ││
 │  │              │  Page        │               ││
-│  └──────────────┴──────────────┴──────────────┘│
+│  └──────────────┴──────────────┴───────────────┘│
 │  ┌─────────────────────────────────────────────┐│
-│  │      Extraction Sémantique                ││
+│  │      Extraction Sémantique                  ││
 │  └─────────────────────────────────────────────┘│
-└──────────────────────────────────────────────────┘
+└─────────────────────────────────────────────────┘
 ```
 
 ### Composants
